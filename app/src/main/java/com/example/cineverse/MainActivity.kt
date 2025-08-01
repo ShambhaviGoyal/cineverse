@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import androidx.lifecycle.lifecycleScope
 
 class MainActivity : AppCompatActivity() {
     val API_KEY = BuildConfig.API_KEY;
@@ -58,10 +59,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Fetch movies initially
-        CoroutineScope(Dispatchers.IO).launch {
-            getTopRatedMovies()
-            withContext(Dispatchers.Main) {
-                updateMovies()
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                getTopRatedMovies()
+                withContext(Dispatchers.Main) {
+                    updateMovies()
+                }
+            } catch (e: Exception) {
+                Log.e("COROUTINE_ERROR", "Exception: ${e.localizedMessage}", e)
             }
         }
     }
@@ -72,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getTopRatedMovies() {
-        val url = "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1&append_to_response=images"
+        val url = "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1"
         val request = Request.Builder()
             .url(url)
             .addHeader("Authorization", "Bearer $API_KEY")
