@@ -10,7 +10,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import android.util.Log
+import android.widget.ImageView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +44,20 @@ class MainActivity : AppCompatActivity() {
         titleList = mutableListOf()
         rvMovie = findViewById(R.id.movieList)
 
+        val themeToggle = findViewById<ImageView>(R.id.themeToggle)
+        val isNight = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+        themeToggle.setImageResource(if (isNight) R.drawable.sun else R.drawable.moon)
+
+        themeToggle.setOnClickListener {
+            val isCurrentlyNight = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+            val newMode = if (isCurrentlyNight) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.setDefaultNightMode(newMode)
+
+            // Update icon
+            themeToggle.setImageResource(if (!isCurrentlyNight) R.drawable.sun else R.drawable.moon)
+        }
+
+        // Fetch movies initially
         CoroutineScope(Dispatchers.IO).launch {
             getTopRatedMovies()
             withContext(Dispatchers.Main) {
@@ -51,8 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateMovies() {
         rvMovie.adapter = MovieAdapter(posterList, titleList)
-        rvMovie.layoutManager = LinearLayoutManager(this@MainActivity)
-        rvMovie.addItemDecoration(DividerItemDecoration(this@MainActivity, LinearLayoutManager.VERTICAL))
+        rvMovie.layoutManager = GridLayoutManager(this@MainActivity, 2)
     }
 
     private fun getTopRatedMovies() {
