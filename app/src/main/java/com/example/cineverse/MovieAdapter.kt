@@ -30,7 +30,8 @@ class MovieAdapter(private val posterList: List<String>, private val titleList: 
 
     override fun onBindViewHolder(holder: MovieAdapter.ViewHolder, position: Int) {
         Glide.with(holder.itemView)
-            .load("http://via.placeholder.com/300.png")
+            .load(posterList[position])
+            .override(300, 600)
             .into(holder.poster)
 
         holder.title.text = titleList[position]
