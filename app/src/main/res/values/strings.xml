@@ -4,4 +4,6 @@
     <string name="search">Search: </string>
     <string name="example">Example</string>
     <string name="movie_title">Movie Title</string>
+    <string name="top_rated">Top</string>
+    <string name="popular">Popular</string>
 </resources>
