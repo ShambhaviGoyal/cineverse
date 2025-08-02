@@ -1,6 +1,5 @@
 package com.example.cineverse
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -8,18 +7,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,8 +24,7 @@ class MainActivity : AppCompatActivity() {
     val API_KEY = BuildConfig.API_KEY;
     val client = OkHttpClient()
 
-    private lateinit var posterList: MutableList<String>
-    private lateinit var titleList: MutableList<String>
+    private lateinit var movieList: MutableList<JSONObject>
     private lateinit var rvMovie: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +37,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        posterList = mutableListOf()
-        titleList = mutableListOf()
+        movieList = mutableListOf()
         rvMovie = findViewById(R.id.movieList)
 
 
@@ -128,17 +120,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clearMovies() {
-        this.titleList.clear()
-        this.posterList.clear()
+        this.movieList.clear()
     }
 
     private fun updateMovies() {
-        rvMovie.adapter = MovieAdapter(posterList, titleList)
+        rvMovie.adapter = MovieAdapter(movieList)
         rvMovie.layoutManager = GridLayoutManager(this@MainActivity, 2)
     }
 
+    private fun getMovie(movieUrl: String) {
+        val movieDetailsRequest = Request.Builder()
+            .url(movieUrl)
+            .addHeader("Authorization", "Bearer $API_KEY")
+            .build()
+
+        client.newCall(movieDetailsRequest).execute().use { responseMovie ->
+            if (responseMovie.isSuccessful) {
+                val movieObject = JSONObject(responseMovie.body?.string())
+                movieList.add(movieObject)
+            } else {
+                Log.e("HTTP_ERROR", "Error: ${responseMovie.code} - ${responseMovie.message}")
+                null
+            }
+        }
+    }
+
     private fun getTopRatedMovies() {
-        val url = "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1"
+        val url = "https://api.themoviedb.org/3/movie/top_rated?append_to_response=revenue&language=en-US&page=1"
         val request = Request.Builder()
             .url(url)
             .addHeader("Authorization", "Bearer $API_KEY")
@@ -150,8 +158,8 @@ class MainActivity : AppCompatActivity() {
                 val movies = jsonObject.getJSONArray("results")
 
                 for (index in 0 until movies.length()) {
-                    this.titleList.add(movies.getJSONObject(index).get("original_title").toString())
-                    this.posterList.add("https://image.tmdb.org/t/p/original" + movies.getJSONObject(index).get("poster_path"))
+                    val movieUrl = "https://api.themoviedb.org/3/movie/${movies.getJSONObject(index).get("id")}"
+                    getMovie(movieUrl)
                 }
             } else {
                 Log.e("HTTP_ERROR", "Error: ${response.code} - ${response.message}")
@@ -173,8 +181,8 @@ class MainActivity : AppCompatActivity() {
                 val movies = jsonObject.getJSONArray("results")
 
                 for (index in 0 until movies.length()) {
-                    this.titleList.add(movies.getJSONObject(index).get("original_title").toString())
-                    this.posterList.add("https://image.tmdb.org/t/p/original" + movies.getJSONObject(index).get("poster_path"))
+                    val movieUrl = "https://api.themoviedb.org/3/movie/${movies.getJSONObject(index).get("id")}"
+                    getMovie(movieUrl)
                 }
             } else {
                 Log.e("HTTP_ERROR", "Error: ${response.code} - ${response.message}")
@@ -196,8 +204,8 @@ class MainActivity : AppCompatActivity() {
                 val movies = jsonObject.getJSONArray("results")
 
                 for (index in 0 until movies.length()) {
-                    this.titleList.add(movies.getJSONObject(index).get("original_title").toString())
-                    this.posterList.add("https://image.tmdb.org/t/p/original" + movies.getJSONObject(index).get("poster_path"))
+                    val movieUrl = "https://api.themoviedb.org/3/movie/${movies.getJSONObject(index).get("id")}"
+                    getMovie(movieUrl)
                 }
             } else {
                 Log.e("HTTP_ERROR", "Error: ${response.code} - ${response.message}")
