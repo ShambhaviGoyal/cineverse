@@ -11,7 +11,9 @@ import okhttp3.Request
 import okhttp3.Response
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
@@ -93,6 +95,24 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Search Functionality
+        val searchIcon = findViewById<ImageView>(R.id.seach_icon)
+        searchIcon.setOnClickListener {
+            val searchQuery = extractSearchQuery()
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    clearMovies()
+                    searchMovie(searchQuery)
+                    withContext(Dispatchers.Main) {
+                        updateMovies()
+                    }
+                } catch (e: Exception) {
+                    Log.e("COROUTINE_ERROR", "Exception: ${e.localizedMessage}", e)
+                }
+            }
+        }
+
         // Fetch movies initially
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -161,5 +181,37 @@ class MainActivity : AppCompatActivity() {
                 null
             }
         }
+    }
+
+    private fun searchMovie(query: String) {
+        val url = "https://api.themoviedb.org/3/search/movie?language=en-US&page=1&sort_by=popularity.desc&query=$query"
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer $API_KEY")
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful) {
+                val jsonObject = JSONObject(response.body?.string())
+                val movies = jsonObject.getJSONArray("results")
+
+                for (index in 0 until movies.length()) {
+                    this.titleList.add(movies.getJSONObject(index).get("original_title").toString())
+                    this.posterList.add("https://image.tmdb.org/t/p/original" + movies.getJSONObject(index).get("poster_path"))
+                }
+            } else {
+                Log.e("HTTP_ERROR", "Error: ${response.code} - ${response.message}")
+                null
+            }
+        }
+    }
+
+    private fun extractSearchQuery(): String {
+        val searchBox = findViewById<EditText>(R.id.search_bar)
+
+        val searchQuery = searchBox.text
+        val formattedQuery = searchQuery.split(" ").joinToString("+")
+
+        return formattedQuery
     }
 }
