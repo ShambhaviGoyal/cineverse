@@ -75,7 +75,7 @@ class MovieAdapter(private val movieList: List<JSONObject>)
                 .override(150, 200)
                 .into(popupPoster)
 
-            val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
+            val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
 
             popupWindow.showAtLocation(holder.itemView, Gravity.CENTER, 0, 0)
 
