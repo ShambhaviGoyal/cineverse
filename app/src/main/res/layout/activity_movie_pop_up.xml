@@ -36,7 +36,7 @@
                 android:layout_height="500dp"
                 android:layout_centerInParent="true"
                 android:layout_margin="2dp"
-                app:cardBackgroundColor="@android:color/white"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="3dp"
                 app:cardElevation="0dp"
                 app:cardMaxElevation="0dp"
