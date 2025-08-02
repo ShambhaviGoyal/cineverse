@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -45,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         titleList = mutableListOf()
         rvMovie = findViewById(R.id.movieList)
 
+
+        // Theme Button
         val themeToggle = findViewById<ImageView>(R.id.themeToggle)
         val isNight = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         themeToggle.setImageResource(if (isNight) R.drawable.sun else R.drawable.moon)
@@ -58,9 +61,42 @@ class MainActivity : AppCompatActivity() {
             themeToggle.setImageResource(if (!isCurrentlyNight) R.drawable.sun else R.drawable.moon)
         }
 
+        // Top Button
+        val topButton = findViewById<Button>(R.id.topRated)
+        topButton.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    clearMovies()
+                    getTopRatedMovies()
+                    withContext(Dispatchers.Main) {
+                        updateMovies()
+                    }
+                } catch (e: Exception) {
+                    Log.e("COROUTINE_ERROR", "Exception: ${e.localizedMessage}", e)
+                }
+            }
+        }
+
+        // Popular Button
+        val popularButton = findViewById<Button>(R.id.popular)
+        popularButton.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    clearMovies()
+                    getPopularMovies()
+                    withContext(Dispatchers.Main) {
+                        updateMovies()
+                    }
+                } catch (e: Exception) {
+                    Log.e("COROUTINE_ERROR", "Exception: ${e.localizedMessage}", e)
+                }
+            }
+        }
+
         // Fetch movies initially
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                clearMovies()
                 getTopRatedMovies()
                 withContext(Dispatchers.Main) {
                     updateMovies()
@@ -71,6 +107,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun clearMovies() {
+        this.titleList.clear()
+        this.posterList.clear()
+    }
+
     private fun updateMovies() {
         rvMovie.adapter = MovieAdapter(posterList, titleList)
         rvMovie.layoutManager = GridLayoutManager(this@MainActivity, 2)
@@ -78,6 +119,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun getTopRatedMovies() {
         val url = "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1"
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer $API_KEY")
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful) {
+                val jsonObject = JSONObject(response.body?.string())
+                val movies = jsonObject.getJSONArray("results")
+
+                for (index in 0 until movies.length()) {
+                    this.titleList.add(movies.getJSONObject(index).get("original_title").toString())
+                    this.posterList.add("https://image.tmdb.org/t/p/original" + movies.getJSONObject(index).get("poster_path"))
+                }
+            } else {
+                Log.e("HTTP_ERROR", "Error: ${response.code} - ${response.message}")
+                null
+            }
+        }
+    }
+
+    private fun getPopularMovies() {
+        val url = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
         val request = Request.Builder()
             .url(url)
             .addHeader("Authorization", "Bearer $API_KEY")
