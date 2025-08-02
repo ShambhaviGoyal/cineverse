@@ -28,6 +28,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var movieList: MutableList<JSONObject>
     private lateinit var rvMovie: RecyclerView
 
+    private val SELECTED_MOVIE_LIST_TYPE_KEY = "selected_movie_list_type"
+    private var selectedListType: String = "top_rated"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,9 +59,14 @@ class MainActivity : AppCompatActivity() {
             themeToggle.setImageResource(if (!isCurrentlyNight) R.drawable.sun else R.drawable.moon)
         }
 
+        if (savedInstanceState != null) {
+            selectedListType = savedInstanceState.getString(SELECTED_MOVIE_LIST_TYPE_KEY, "top_rated")
+        }
+
         // Top Button
         val topButton = findViewById<Button>(R.id.topRated)
         topButton.setOnClickListener {
+            selectedListType = "top_rated"
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     clearMovies()
@@ -75,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         // Popular Button
         val popularButton = findViewById<Button>(R.id.popular)
         popularButton.setOnClickListener {
+            selectedListType = "popular"
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     clearMovies()
@@ -102,7 +111,11 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 clearMovies()
-                getTopRatedMovies()
+                if (selectedListType == "popular") {
+                    getPopularMovies()
+                } else {
+                    getTopRatedMovies()
+                }
                 withContext(Dispatchers.Main) {
                     updateMovies()
                 }
@@ -110,6 +123,11 @@ class MainActivity : AppCompatActivity() {
                 Log.e("COROUTINE_ERROR", "Exception: ${e.localizedMessage}", e)
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SELECTED_MOVIE_LIST_TYPE_KEY, selectedListType)
     }
 
     private fun clearMovies() {
