@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
@@ -90,19 +91,11 @@ class MainActivity : AppCompatActivity() {
         // Search Functionality
         val searchIcon = findViewById<ImageView>(R.id.seach_icon)
         searchIcon.setOnClickListener {
-            val searchQuery = extractSearchQuery()
-
-            lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    clearMovies()
-                    searchMovie(searchQuery)
-                    withContext(Dispatchers.Main) {
-                        updateMovies()
-                    }
-                } catch (e: Exception) {
-                    Log.e("COROUTINE_ERROR", "Exception: ${e.localizedMessage}", e)
-                }
-            }
+            searchFunctionality()
+        }
+        val searchBox = findViewById<EditText>(R.id.search_bar)
+        searchBox.addTextChangedListener {
+            searchFunctionality()
         }
 
         // Fetch movies initially
@@ -187,6 +180,22 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Log.e("HTTP_ERROR", "Error: ${response.code} - ${response.message}")
                 null
+            }
+        }
+    }
+
+    private fun searchFunctionality() {
+        val searchQuery = extractSearchQuery()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                clearMovies()
+                searchMovie(searchQuery)
+                withContext(Dispatchers.Main) {
+                    updateMovies()
+                }
+            } catch (e: Exception) {
+                Log.e("COROUTINE_ERROR", "Exception: ${e.localizedMessage}", e)
             }
         }
     }
