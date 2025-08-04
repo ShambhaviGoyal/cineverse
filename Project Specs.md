@@ -42,9 +42,11 @@ Required Features:
 Stretch Features:
 
 - Have a search box to look up movies
+- Have Light/Dark themes
 
 ### 2. Chosen API
-# TMDB
+
+TMDB
 - **https://api.themoviedb.org/3/search/movie**
 
 ### 3. User Interaction
@@ -62,8 +64,8 @@ Required Features
 <img src="BRUH" width=600>
 
 ### [BONUS] Digital Wireframes & Mockups
-More Bruh
-### [BONUS] Interactive Prototype
+
+<img src="Cineverse%20App%20Layout.png" height=600>
 
 ## Build Notes
 
