@@ -61,7 +61,7 @@ Required Features
 ## Wireframes
 
 <!-- Add picture of your hand sketched wireframes in this section -->
-<img src="BRUH" width=600>
+<img src="https://i.imgur.com/OZc8VJ5.jpeg" width=600>
 
 ### [BONUS] Digital Wireframes & Mockups
 
