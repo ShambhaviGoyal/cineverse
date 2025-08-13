@@ -1,38 +1,45 @@
-# AND101 Milestone 2 - **CineVerse**
+# 🎬 Cineverse
 
-Submitted by:
-- **Naomi Ari**
-- **Shambhavi Goyal**
-- **Het Patel**
-- **Claire Wang**
+Cineverse is a sleek Android app built with Kotlin that lets users browse and explore detailed information about movies, TV shows, and actors — all powered by The Movie Database (TMDb) API.
 
-Time spent: **12** hours spent in total
+---
 
-## Summary
+## Features
 
-This document provides a summary of our project building process for our app, **CineVerse**
+- Browse popular and top-rated movies using a responsive RecyclerView  
+- View detailed movie information via pop-up dialogs  
+- Search for movies by title with an intuitive search interface  
+- Supports light and dark themes for comfortable viewing  
 
-## Milestone Requirements
+---
 
-The following REQUIRED features are completed:
+## Technology Stack
 
-- [x] Assign features to each member of your group
-- [x] Establish a goal time for completing each feature
+- **Language:** Kotlin  
+- **Platform:** Android (minimum SDK 21+)  
+- **API:** TMDb API  
+- **UI:** RecyclerView, Material Design components  
 
-The following REQUIRED files are included:
+---
 
-- [x] Updated 📄 `project_spec.md`, which contains:
-  - [x] App Overview (Milestone 1)
-  - [x] App Spec (Milestone 1)
-  - [x] Checked off 2+ completed features
-  - [ ] 2+ Videos/GIFs of build progress
+## Getting Started
 
-- [x] Our 🎥 Demo Video
-  - [x] We have also added the Demo Video Link to the Group Info Form on the course portal.
+1. **Clone the repository:**
 
-The following EXTRA features are implemented:
+    ```bash
+    git clone https://github.com/ShambhaviGoyal/cineverse.git
+    ```
 
-- [ ] List anything else that you added to improve your submission!
+2. **Open the project in Android Studio.**
+
+3. **Sync and build the project to download dependencies.**
+
+4. **Set up your TMDb API key:**  
+   Add your API key in `local.properties` or use a secure method to store it.
+
+5. **Run the app** on an emulator or connected Android device using Android Studio’s run button.
+
+---
 
 ## 🎥 Demo Video
 
@@ -40,7 +47,9 @@ Here's a video that demos all of the app's implemented features:
 
 <img src='cineverse_demo.gif' title='Video Demo' height='600' alt='Video Demo' />
 
-VIDEO created with **ScreenToGif**
+---
+
+Built with ❤️ by Shambhavi Goyal, Naomi Ari, Het Patel, and Claire Wang.
 
 ## Notes
 
