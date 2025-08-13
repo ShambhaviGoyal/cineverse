@@ -50,7 +50,3 @@ Here's a video that demos all of the app's implemented features:
 ---
 
 Built with ❤️ by Shambhavi Goyal, Naomi Ari, Het Patel, and Claire Wang.
-
-## Notes
-
-Here's a place for any other notes on this milestone!
